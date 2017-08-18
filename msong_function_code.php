@@ -16,6 +16,7 @@
 * 14. 网络图片下载到本地
 * 15. 读取目录下所有文件和目录到数组
 * 16. 读取csv文件到一个数组
+* 17. 文件上传接收函数
 */
 
 // 1. thinkphp3.2版本内dump函数代码
@@ -708,3 +709,35 @@ function input_csv($filename) {
     return $out; 
 }
 
+/**
+ * 17. 文件上传接收函数
+ * @param string $input_name
+ * @param string $save_path 
+ * @return string $file_path
+ */
+function upload_file_to($input_name, $save_path='upload/')
+{
+    if ((($_FILES[$input_name]["type"] == "image/gif")
+    || ($_FILES[$input_name]["type"] == "image/jpeg")
+    || ($_FILES[$input_name]["type"] == "image/png"))
+    && ($_FILES[$input_name]["size"] < 20000)){
+        if ($_FILES[$input_name]["error"] > 0){
+            echo "Return Code: " . $_FILES[$input_name]["error"] . "<br />";
+        }else{
+            // echo "Upload: " . $_FILES[$input_name]["name"] . "<br />";
+            // echo "Type: " . $_FILES[$input_name]["type"] . "<br />";
+            // echo "Size: " . ($_FILES[$input_name]["size"] / 1024) . " Kb<br />";
+            // echo "Temp file: " . $_FILES[$input_name]["tmp_name"] . "<br />";
+
+            if (file_exists($save_path . $_FILES[$input_name]["name"])){
+                echo $_FILES[$input_name]["name"] . " already exists. ";
+            }else{
+                move_uploaded_file($_FILES[$input_name]["tmp_name"],
+                $save_path . $_FILES[$input_name]["name"]);
+                return $save_path . $_FILES[$input_name]["name"];
+            }
+        }
+    }else{
+        return false;
+    }
+}
