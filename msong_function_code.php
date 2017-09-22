@@ -15,7 +15,7 @@
 * 13. 分页html代码输出
 * 14. 网络图片下载到本地
 * 15. 读取目录下所有文件和目录到数组
-* 16. 读取csv文件到一个数组
+* 16. 1.读取csv文件到一个数组 2.输出 CSV 文件到浏览器下载
 * 17. 文件上传接收函数
 */
 
@@ -691,7 +691,7 @@ function searchDir($path,&$data=array()){
 }
 
 /*
-* 16. 读取csv文件到一个数组
+* 16.1 读取csv文件到一个数组
  * @filename: 要读取的目标文件路径
 */
 function input_csv($filename) {
@@ -707,6 +707,26 @@ function input_csv($filename) {
     } 
     fclose($handle); //关闭指针 
     return $out; 
+}
+/*
+* 16.2 输出 CSV 文件到浏览器
+ * @$title: 标题行数据数组，示例：array（ 0=>array('编号', '姓名', 'QQ号') ）
+ * @$data_list: 数据行数据数组，示例：array（ 0=>array('1', '小明', '817412347'), 1=>array('2', '小红', '817412345') ）
+*/
+function put_csv_file($title=null, $data_list){
+    $filename = "2017年上汽保险数据";
+    $time = date("Y-m-d-H-i-s");
+    $filename = iconv("utf-8", "GB2312", $filename);
+    $filename = $filename . $time;
+    header('Content-Type: application/vnd.ms-excel;charset=utf-8');
+    header('Content-Disposition: attachment;filename="' . $filename . '.csv"');
+    header('Cache-Control: max-age=0');
+    $fp = fopen('php://output', 'a');
+    empty($title) OR fputcsv($fp, eval('return ' . iconv("utf-8", "GB2312", str_replace(" ", " ", var_export($title, TRUE))) . ';'));
+    foreach ($data_list as $kl=>$line) {
+        fputcsv($fp, eval('return ' . iconv("utf-8", "GBK//IGNORE", str_replace(" ", " ", var_export($line, TRUE))) . ';'));
+    }
+    fclose($fp);
 }
 
 /**
