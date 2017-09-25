@@ -1,7 +1,7 @@
 <?php
 /*
 * 1. thinkphp3.2版本内dump函数代码
-* 2. 把点格式的ip地址转换成整数表示的ip地址  13761238751
+* 2. a.把点格式的ip地址转换成整数表示的ip地址 b.获取客户端ip地址信息（是否整数表示，默认否）
 * 3. CURL《 1)GET 请求  2)POST 请求  3)get方式批量抓取数据 》
 * 4. 分页输出类：$totalPage总页数、$page当前页、$gets其它参数数组
 * 5. 据库查询、连接函数
@@ -45,7 +45,7 @@ function dump($var, $echo=true, $label=null, $strict=true) {
         return $output;
 }
 
-// 2. 把点格式的ip地址转换成整数表示的ip地址  
+// 2.1 把点格式的ip地址转换成整数表示的ip地址
 function EncodeIp($strDotquadIp) {
     $arrIpSep = explode('.', $strDotquadIp);
 
@@ -58,6 +58,31 @@ function EncodeIp($strDotquadIp) {
         }
     }
     return $intIp;
+}
+// 2.2 获取客户端ip地址信息（是否整数表示，默认否）
+function getIP($type = 0) {
+    $type       =  $type ? 1 : 0;
+    $ip  =   NULL;
+    
+    if(!empty($_SERVER['HTTP_X_REAL_IP'])){//nginx 代理模式下，获取客户端真实IP
+        $ip=$_SERVER['HTTP_X_REAL_IP'];     
+    }elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {//客户端的ip
+        $ip  = $_SERVER['HTTP_CLIENT_IP'];
+    }elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {//浏览当前页面的用户计算机的网关
+        $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $pos = array_search('unknown',$arr);
+        if(false !== $pos) unset($arr[$pos]);
+        $ip  = trim($arr[0]);
+    }elseif (isset($_SERVER['REMOTE_ADDR'])) {
+        $ip  = $_SERVER['REMOTE_ADDR'];//浏览当前页面的用户计算机的ip地址
+    }else{
+        $ip  = $_SERVER['REMOTE_ADDR'];
+    }
+    // IP地址合法验证
+    $long = sprintf("%u",ip2long($ip));
+    $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
+    
+    return $ip[$type];
 }
 
 
