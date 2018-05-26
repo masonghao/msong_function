@@ -34,7 +34,6 @@ class Log {
         file_put_contents($filename, $content, FILE_APPEND);
     }
 
-
     //读取日志
     public function readLog($filename){
         if(file_exists($filename)){
@@ -45,6 +44,8 @@ class Log {
         }
         return $json;
     }
+    
+    // 获取客户端IP地址
     public function getIpAdress(){ 
         if(getenv('HTTP_CLIENT_IP')) {
           $onlineip = getenv('HTTP_CLIENT_IP');
@@ -108,7 +109,7 @@ class Log {
      * @return string   
      */  
     function get_os(){  
-    $agent = $_SERVER['HTTP_USER_AGENT'];  
+        $agent = $_SERVER['HTTP_USER_AGENT'];  
         $os = false; 
         if (strpos($agent, 'Android') !== false) {//strpos()定位出第一次出现字符串的位置，这里定位为0  
             preg_match("/(?<=Android )[\d\.]{1,}/", $agent, $version);  
