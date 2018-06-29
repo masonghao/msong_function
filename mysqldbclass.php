@@ -3,7 +3,6 @@
  数据库操作类
 */
 class Dbclass {
-    private $con = '';
     //打开数据库连接
     function __construct($host, $uname, $password, $dbname){
         $this->db_host = $host;
